@@ -1,0 +1,23 @@
+aws sts get-caller-identity
+
+aws eks update-kubeconfig --region us-east-1 --name eks-soat-fast-food-dev
+
+kubectl get nodes
+
+# read/write acess in the cluster, if yes, you are admin in the cluster
+kubectl auth can-i "*" "*"
+
+# check metrics server is up
+kubectl get pods -n kube-system
+kubectl logs -l app.kubernetes.io/name=metrics-server -f -n kube-system
+kubectl top pods -n kube-system (if is cpu/memory, metrics is ok)
+
+
+watch -t kubectl get pods -n 3-example (watching pods)
+watch -t kubectl get hpa -n 3-example (watching hpa)
+
+# Force increse pods 
+curl "localhost:8080/api/cpu?index=44"
+
+# Use ingress header whithout a dns for redirect the request
+curl -i --header "Host: ex6.elvismariel.com" http://k8s-6example-myapp-b762a54d7f-1531047787.us-east-1.elb.amazonaws.com/about
