@@ -18,6 +18,8 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region  = "us-east-1"
-  profile = "elvismariel"
+  region = var.region
+  assume_role {
+    role_arn = var.role_arn
+  }
 }
