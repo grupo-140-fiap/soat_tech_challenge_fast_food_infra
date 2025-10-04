@@ -15,7 +15,7 @@ env:
 
 jobs:
   plan:
-    name: Deploy Infra
+    name: Deploy Infra EKS
     runs-on: ubuntu-latest
     steps:
       - name: Git clone the repository
