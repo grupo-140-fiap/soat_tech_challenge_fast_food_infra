@@ -11,9 +11,6 @@ terraform {
     helm = {
       source  = "hashicorp/helm"
       version = "~> 2.11"
-      kubernetes = {
-        config_path = "~/.kube/config"
-      }
     }
   }
   required_version = "~> 1.13.2"
@@ -24,5 +21,11 @@ provider "aws" {
   region = var.region
   assume_role {
     role_arn = var.role_arn
+  }
+}
+
+provider "helm" {
+  kubernetes = {
+    config_path = "~/.kube/config"
   }
 }
