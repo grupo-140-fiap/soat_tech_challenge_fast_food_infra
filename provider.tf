@@ -26,5 +26,4 @@ provider "aws" {
 
 provider "kubernetes" {
   config_path    = "~/.kube/config"
-  config_context = "eks-${var.project_name}"
 }
