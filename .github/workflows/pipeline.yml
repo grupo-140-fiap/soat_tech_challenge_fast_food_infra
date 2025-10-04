@@ -10,6 +10,7 @@ on:
 
 env:
   AWS_ROLE_ARN: arn:aws:iam::701612390900:role/service-role/GitHubActions
+  AWS_REGION: us-east-1
 
 
 jobs:
