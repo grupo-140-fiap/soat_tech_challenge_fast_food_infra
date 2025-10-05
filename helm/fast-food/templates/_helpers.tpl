@@ -64,16 +64,6 @@ Create the name of the service account to use
 {{/*
 MySQL labels
 */}}
-{{- define "fast-food.mysql.labels" -}}
-{{ include "fast-food.labels" . }}
-app.kubernetes.io/component: database
-{{- end }}
-
 {{/*
-MySQL selector labels
+MySQL helpers removed: database is external (RDS)
 */}}
-{{- define "fast-food.mysql.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "fast-food.name" . }}-mysql
-app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/component: database
-{{- end }}

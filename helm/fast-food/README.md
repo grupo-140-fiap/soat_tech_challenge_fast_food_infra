@@ -1,12 +1,12 @@
 # Fast Food Helm Chart
 
-Este Helm Chart deploya o Sistema de Autoatendimento no Kubernetes com todas as dependências necessárias.
+Este Helm Chart deploya o Sistema de Autoatendimento no Kubernetes. O banco de dados não é criado no cluster — utilize um RDS externo e forneça as variáveis de conexão via valores.
 
 ## 📋 Pré-requisitos
 
 - Kubernetes 1.19+
 - Helm 3.2.0+
-- PV provisioner support no cluster para persistência
+ 
 
 ## 🚀 Instalação
 
@@ -15,7 +15,7 @@ Este Helm Chart deploya o Sistema de Autoatendimento no Kubernetes com todas as 
 helm install fast-food ./helm/fast-food
 ```
 
-### 2. Instalação com Valores Customizados
+### 2. Instalação com Valores Customizados (RDS externo)
 ```bash
 cat > my-values.yaml <<EOF
 app:
@@ -25,13 +25,15 @@ app:
     minReplicas: 3
     maxReplicas: 15
 
-mysql:
-  auth:
-    rootPassword: "minha-senha-segura"
-    
+env:
+  DB_HOST: "seu-endpoint-rds.rds.amazonaws.com"
+  DB_PORT: "3306"
+  DB_NAME: "seu_banco"
+  DB_USER: "seu_usuario"
+
 secrets:
-  DB_PASSWORD: "bWluaGEtc2VuaGEtc2VndXJh"  # base64: minha-senha-segura
-  ACCESSTOKEN: "c2V1X3Rva2VuX21lcmNhZG9wYWdv"  # base64: seu_token_mercadopago
+  DB_PASSWORD: "bWluaGEtc2VuaGEtc2VndXJh"  # base64
+  ACCESSTOKEN: "c2V1X3Rva2VuX21lcmNhZG9wYWdv"  # base64
 EOF
 
 helm install fast-food ./helm/fast-food -f my-values.yaml
@@ -54,17 +56,19 @@ helm install fast-food ./helm/fast-food -n producao --set namespace.name=produca
 | `app.autoscaling.enabled` | Habilitar HPA | `true` |
 | `app.autoscaling.minReplicas` | Mínimo de réplicas | `2` |
 | `app.autoscaling.maxReplicas` | Máximo de réplicas | `10` |
-| `mysql.enabled` | Habilitar MySQL | `true` |
-| `mysql.persistence.enabled` | Persistência MySQL | `true` |
-| `mysql.persistence.size` | Tamanho do volume | `10Gi` |
+| `env.DB_HOST` | Endpoint do RDS | `"your-rds-endpoint.rds.amazonaws.com"` |
+| `env.DB_PORT` | Porta do RDS | `"3306"` |
+| `env.DB_NAME` | Nome do banco | `"your_db_name"` |
+| `env.DB_USER` | Usuário do banco | `"your_db_user"` |
 
 ### Variáveis de Ambiente
 
 ```yaml
 env:
-  DB_HOST: "fast-food-mysql"
+  DB_HOST: "seu-endpoint-rds.rds.amazonaws.com"
   DB_PORT: "3306"
-  DB_NAME: "fast_food_db"
+  DB_NAME: "seu_banco"
+  DB_USER: "seu_usuario"
   PORT: "8080"
   GIN_MODE: "release"
 ```
@@ -74,8 +78,8 @@ env:
 ```yaml
 secrets:
   # Senha do banco (base64)
-  DB_PASSWORD: "cm9vdA=="  # root
-  
+  DB_PASSWORD: "eW91cl9iYXNlNjRfZW5jb2RlZF9wYXNzd29yZA=="
+
   # Token MercadoPago (base64) 
   ACCESSTOKEN: "c2V1X3Rva2VuX21lcmNhZG9wYWdv"
 ```
@@ -135,9 +139,6 @@ kubectl run test-pod --rm -i --tty --image=busybox -- /bin/sh
 # Aplicação
 kubectl logs -f deployment/fast-food
 
-# MySQL
-kubectl logs -f deployment/fast-food-mysql
-
 # Todos os componentes
 kubectl logs -f -l app.kubernetes.io/instance=fast-food
 ```
@@ -151,8 +152,6 @@ helm uninstall fast-food
 # Remover namespace (se criado pelo chart)
 kubectl delete namespace fast-food
 
-# Verificar PVCs remanescentes
-kubectl get pvc -l app.kubernetes.io/instance=fast-food
 ```
 
 ## 🔒 Segurança
@@ -220,11 +219,10 @@ app:
 
 ### Services Criados
 - **ClusterIP**: `fast-food-clusterip` (porta 8080)
-- **MySQL**: `fast-food-mysql` (porta 3306)
 
 ### Acesso Externo
 ```bash
 
 # Via Port-Forward
-kubectl port-forward service/fast-food-api-clusterip 8080:8080 -n fast-food
+kubectl port-forward service/fast-food-clusterip 8080:8080 -n fast-food
 ```
