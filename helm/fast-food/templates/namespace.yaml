@@ -1,0 +1,11 @@
+{{- if .Values.namespace.create -}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace.name }}
+  labels:
+    name: {{ .Values.namespace.name }}
+    environment: production
+    app: {{ .Values.app.name }}
+    {{- include "fast-food.labels" . | nindent 4 }}
+{{- end }}
