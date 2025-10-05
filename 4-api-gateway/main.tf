@@ -72,52 +72,72 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
   }
 }
 
-# Security Group for VPC Link (commented - to be implemented when needed)
-# resource "aws_security_group" "vpc_link" {
-#   name        = "${var.project_name}-vpc-link-sg"
-#   description = "Security group for API Gateway VPC Link"
-#   vpc_id      = data.terraform_remote_state.networking.outputs.vpc_id
-#
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-#
-#   tags = {
-#     Name        = "${var.project_name}-vpc-link-sg"
-#     Environment = var.environment
-#     Project     = var.project_name
-#   }
-# }
+# Security Group for VPC Link
+resource "aws_security_group" "vpc_link" {
+  name        = "${var.project_name}-vpc-link-sg"
+  description = "Security group for API Gateway VPC Link"
+  vpc_id      = data.terraform_remote_state.networking.outputs.vpc_id
 
-# VPC Link (commented - to be implemented when needed)
-# resource "aws_apigatewayv2_vpc_link" "main" {
-#   name               = "${var.project_name}-vpc-link"
-#   security_group_ids = [aws_security_group.vpc_link.id]
-#   subnet_ids         = data.terraform_remote_state.networking.outputs.private_subnet_ids
-#
-#   tags = {
-#     Name        = "${var.project_name}-vpc-link"
-#     Environment = var.environment
-#     Project     = var.project_name
-#   }
-# }
+  # API Gateway VPC Link ENIs need egress to reach NLB in the VPC
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-# Example Integration (commented - to be implemented when backend is ready)
-# resource "aws_apigatewayv2_integration" "backend" {
-#   api_id             = aws_apigatewayv2_api.main.id
-#   integration_type   = "HTTP_PROXY"
-#   integration_method = "ANY"
-#   integration_uri    = "http://backend-service.example.com"
-#   connection_type    = "VPC_LINK"
-#   connection_id      = aws_apigatewayv2_vpc_link.main.id
-# }
+  tags = {
+    Name        = "${var.project_name}-vpc-link-sg"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
 
-# Example Route (commented - to be implemented when integration is ready)
-# resource "aws_apigatewayv2_route" "example" {
-#   api_id    = aws_apigatewayv2_api.main.id
-#   route_key = "GET /api/{proxy+}"
-#   target    = "integrations/${aws_apigatewayv2_integration.backend.id}"
-# }
+# VPC Link
+resource "aws_apigatewayv2_vpc_link" "main" {
+  name               = "${var.project_name}-vpc-link"
+  security_group_ids = [aws_security_group.vpc_link.id]
+  subnet_ids         = data.terraform_remote_state.networking.outputs.private_subnet_ids
+
+  tags = {
+    Name        = "${var.project_name}-vpc-link"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+}
+
+
+# Resolve the internal NLB created by the Kubernetes Service
+data "aws_lb" "backend" {
+  name = var.nlb_name
+}
+
+# Fetch the listener on the desired port (typically 80)
+data "aws_lb_listener" "backend" {
+  load_balancer_arn = data.aws_lb.backend.arn
+  port              = var.backend_listener_port
+}
+
+# Integration via VPC Link to NLB listener
+resource "aws_apigatewayv2_integration" "backend" {
+  api_id                  = aws_apigatewayv2_api.main.id
+  integration_type        = "HTTP_PROXY"
+  integration_method      = "ANY"
+  connection_type         = "VPC_LINK"
+  connection_id           = aws_apigatewayv2_vpc_link.main.id
+  payload_format_version  = "1.0"
+  integration_uri         = data.aws_lb_listener.backend.arn
+
+  timeout_milliseconds = 29000
+
+  # Ensure the full client path is forwarded to the backend
+  request_parameters = {
+    "overwrite:path" = "$request.path"
+  }
+}
+
+resource "aws_apigatewayv2_route" "proxy" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = var.route_key
+  target    = "integrations/${aws_apigatewayv2_integration.backend.id}"
+}
