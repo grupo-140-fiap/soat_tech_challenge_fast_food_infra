@@ -47,10 +47,12 @@ resource "aws_eks_cluster" "main" {
   name     = var.cluster_name
   version  = var.cluster_version
   role_arn = aws_iam_role.eks_cluster.arn
+  enabled_cluster_log_types = var.cluster_log_types
 
   vpc_config {
     endpoint_private_access = var.endpoint_private_access
     endpoint_public_access  = var.endpoint_public_access
+    public_access_cidrs     = var.public_access_cidrs
 
     subnet_ids = data.terraform_remote_state.networking.outputs.private_subnet_ids
   }

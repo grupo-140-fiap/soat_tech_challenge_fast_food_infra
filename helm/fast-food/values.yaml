@@ -1,0 +1,113 @@
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+
+app:
+  name: fast-food-api
+  image:
+    repository: danieltezolin/fast-food-api
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  
+  service:
+    type: LoadBalancer
+    port: 80
+    targetPort: 8080
+    
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+mysql:
+  enabled: true
+  image:
+    repository: mysql
+    tag: "8.0"
+    pullPolicy: IfNotPresent
+    
+  service:
+    port: 3306
+    
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+    
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+      
+  auth:
+    rootPassword: "root"
+    database: "fast_food_db"
+    username: "root"
+
+env:
+  # Database
+  DB_HOST: "fast-food-api-mysql"
+  DB_PORT: "3306"
+  DB_NAME: "fast_food_db"
+  DB_USER: "root"
+  
+  # Application
+  PORT: "8080"
+  GIN_MODE: "release"
+  ENVIRONMENT: "production"
+
+secrets:
+  DB_PASSWORD: "cm9vdA=="
+  
+  ACCESSTOKEN: "eW91cl9tZXJjYWRvcGFnb190b2tlbl9oZXJl"
+
+namespace:
+  create: true
+  name: fast-food
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  fsGroup: 65534
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""

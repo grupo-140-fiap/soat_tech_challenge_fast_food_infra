@@ -1,0 +1,14 @@
+apiVersion: v2
+name: fast-food
+description: Sistema de Autoatendimento para Lanchonete - Tech Challenge Fase 2
+type: application
+version: 2.0.0
+appVersion: "2.0.0"
+home: https://github.com/samuellalvs/soat_tech_challenge_fast_food
+sources:
+  - https://github.com/samuellalvs/soat_tech_challenge_fast_food
+keywords:
+  - fast-food
+  - restaurant
+  - order-management
+  - clean-architecture

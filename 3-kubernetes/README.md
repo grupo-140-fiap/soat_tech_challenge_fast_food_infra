@@ -23,6 +23,10 @@ Esta camada instala componentes essenciais do Kubernetes usando Helm, incluindo 
 - **Cluster Autoscaler Policy**: Permissões para gerenciar Auto Scaling Groups
 - **Pod Identity Association**: Associação entre service account e IAM role
 
+### EKS Access Entries (Acesso ao Cluster)
+- **Access Entry**: Mapeia um usuário/role IAM ao cluster EKS
+- **Policy Association**: Associa política de acesso (por exemplo, Admin) ao principal
+
 ## ⚙️ Configuração
 
 ### Backend
@@ -56,6 +60,8 @@ Esta camada depende da camada **2-eks** via `terraform_remote_state`:
 | `environment` | Ambiente | `dev` |
 | `metrics_server_version` | Versão do Metrics Server | `3.12.1` |
 | `cluster_autoscaler_version` | Versão do Cluster Autoscaler | `9.37.0` |
+| `eks_access_user_arn` | ARN do usuário/role IAM a ter acesso ao cluster | `""` |
+| `eks_access_policy_name` | Política de acesso do EKS a associar | `"AmazonEKSAdminPolicy"` |
 
 ### Outputs
 
@@ -92,6 +98,20 @@ terraform plan
 ```bash
 terraform apply
 ```
+
+### 5. Conceder acesso ao cluster para um usuário IAM
+
+Defina as variáveis para criar uma Access Entry e associar a política de acesso:
+
+```bash
+terraform apply \
+  -var "eks_access_user_arn=arn:aws:iam::<account-id>:user/<username>" \
+  -var "eks_access_policy_name=AmazonEKSAdminPolicy"
+```
+
+Observações:
+- Requer `authentication_mode = "API"` no cluster (já configurado na camada 2-eks)
+- Políticas suportadas incluem níveis como Admin e View (use o nome da política apropriada)
 
 ### 4. Verificar Instalação
 
@@ -155,6 +175,7 @@ O Cluster Autoscaler gerencia o scaling de nodes:
 - Cluster Autoscaler precisa de permissões IAM corretas
 - Pod Identity deve estar habilitado no cluster
 - Values do Metrics Server podem precisar ajustes para ambientes específicos
+- Access Entries são preferíveis ao antigo ConfigMap `aws-auth` para gerenciar acesso
 
 ## 🔐 Segurança
 

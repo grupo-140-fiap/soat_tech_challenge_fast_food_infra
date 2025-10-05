@@ -8,10 +8,11 @@ Esta camada cria o cluster Amazon EKS (Elastic Kubernetes Service) com node grou
 
 ### EKS Cluster
 - **Nome**: eks-soat-fast-food-dev
-- **Versão**: 1.29
+- **Versão**: 1.32
 - **Endpoint**: Público habilitado, privado desabilitado
 - **Authentication Mode**: API
 - **Pod Identity Addon**: v1.3.8-eksbuild.2
+- **Control Plane Logs**: api, audit, authenticator, controllerManager, scheduler
 
 ### IAM Roles
 - **Cluster Role**: Permissões para o control plane do EKS
@@ -22,7 +23,7 @@ Esta camada cria o cluster Amazon EKS (Elastic Kubernetes Service) com node grou
 
 ### Node Group
 - **Tipo**: ON_DEMAND
-- **Instâncias**: t3.medium
+- **Instâncias**: t3.micro
 - **Scaling**:
   - Desired: 1
   - Min: 1
@@ -54,12 +55,14 @@ Esta camada depende da camada **1-networking** via `terraform_remote_state`:
 | `project_name` | Nome do projeto | `soat-fast-food` |
 | `environment` | Ambiente | `dev` |
 | `cluster_name` | Nome do cluster EKS | `eks-soat-fast-food-dev` |
-| `cluster_version` | Versão do Kubernetes | `1.29` |
+| `cluster_version` | Versão do Kubernetes | `1.32` |
+| `cluster_log_types` | Logs do control plane habilitados | `["api","audit","authenticator","controllerManager","scheduler"]` |
 | `endpoint_private_access` | Habilitar endpoint privado | `false` |
 | `endpoint_public_access` | Habilitar endpoint público | `true` |
+| `public_access_cidrs` | CIDRs permitidos no endpoint público | `["0.0.0.0/0"]` |
 | `pod_identity_addon_version` | Versão do Pod Identity addon | `v1.3.8-eksbuild.2` |
 | `node_group_capacity_type` | Tipo de capacidade | `ON_DEMAND` |
-| `node_group_instance_types` | Tipos de instância | `["t3.medium"]` |
+| `node_group_instance_types` | Tipos de instância | `["t3.micro"]` |
 | `node_group_desired_size` | Tamanho desejado | `1` |
 | `node_group_min_size` | Tamanho mínimo | `1` |
 | `node_group_max_size` | Tamanho máximo | `2` |
@@ -79,7 +82,7 @@ Esta camada depende da camada **1-networking** via `terraform_remote_state`:
 | `node_group_arn` | ARN do node group |
 | `node_group_status` | Status do node group |
 | `node_group_iam_role_arn` | ARN da role IAM do node group |
-| `oidc_provider_arn` | ARN do OIDC provider |
+| `oidc_provider_arn` | URL do issuer OIDC do cluster |
 
 ## 🚀 Como Usar
 
@@ -139,7 +142,7 @@ kubectl get pods -A
 │  ┌──────────────┐              ┌──────────────┐   │
 │  │   Worker     │              │   Worker     │   │
 │  │   Node 1     │              │   Node 2     │   │
-│  │  t3.medium   │              │  t3.medium   │   │
+│  │   t3.micro   │              │   t3.micro   │   │
 │  │              │              │              │   │
 │  │ Private      │              │ Private      │   │
 │  │ Subnet AZ1   │              │ Subnet AZ2   │   │
@@ -170,13 +173,14 @@ kubectl get pods -A
 - Nodes estão em subnets privadas
 - Acesso à internet via NAT Gateway
 - Pod Identity habilitado para workloads
-- Bootstrap cluster creator default permissions habilitado
+- Bootstrap cluster creator admin permissions habilitado
+- Endpoint público pode ser restringido via `public_access_cidrs` (padrão aberto)
 
 ## 💰 Custos
 
 Principais componentes de custo:
 - **EKS Control Plane**: ~$0.10/hora (~$73/mês)
-- **EC2 Instances (t3.medium)**: ~$0.0416/hora por instância
+- **EC2 Instances (t3.micro)**: custo on-demand baixo (elegível ao Free Tier)
 - **NAT Gateway**: ~$0.045/hora + data transfer
 - **EBS Volumes**: Incluídos com nodes
 
