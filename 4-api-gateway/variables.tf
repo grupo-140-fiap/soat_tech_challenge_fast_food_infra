@@ -69,3 +69,21 @@ variable "cors_max_age" {
   default     = 300
   description = "Maximum age for CORS preflight requests in seconds"
 }
+
+variable "nlb_name" {
+  type        = string
+  default     = "ad51ed2ea764549dc8a78495dfb5e978"
+  description = "Name of the internal NLB created by the Kubernetes Service"
+}
+
+variable "backend_listener_port" {
+  type        = number
+  default     = 80
+  description = "Listener port on the NLB to route traffic to the backend"
+}
+
+variable "route_key" {
+  type        = string
+  default     = "ANY /{proxy+}"
+  description = "API Gateway route key to bind to the backend integration"
+}

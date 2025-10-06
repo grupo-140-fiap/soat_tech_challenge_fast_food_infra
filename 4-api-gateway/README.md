@@ -1,253 +1,150 @@
-# 4-API-Gateway - Amazon API Gateway
+# 4-API-Gateway — HTTP API + VPC Link (Privado)
 
-## 📋 Descrição
+Esta camada provisiona um Amazon API Gateway HTTP API com integração privada (VPC Link) para o backend em EKS por trás de um Network Load Balancer (NLB) interno. Inclui CORS, logging no CloudWatch e variáveis utilitárias para simplificar a configuração.
 
-Esta camada cria o Amazon API Gateway HTTP API para expor os serviços do backend. Inclui configuração de CORS, logging e preparação para VPC Link.
+## Visão Geral
 
-## 🎯 Recursos Criados
+```mermaid
+flowchart LR
+    C[Cliente/Internet]
+    AG[API Gateway (HTTP API)\nStage: dev\nCORS + Logs (CloudWatch)]
+    VPC[API Gateway VPC Link]
+    NLB[NLB Interno (:80)]
+    SVC[K8s Service (LoadBalancer)]
+    POD[Pods - Fast Food API (Gin)]
+    RDS[(RDS MySQL Externo)]
 
-### API Gateway HTTP API
-- **Nome**: soat-fast-food-api
-- **Tipo**: HTTP API
-- **CORS**: Configurado para permitir origens, métodos e headers específicos
-- **Stage**: dev (auto-deploy habilitado)
+    C -->|HTTPS| AG
+    AG -->|Privado| VPC
+    VPC --> NLB
+    NLB --> SVC
+    SVC --> POD
+    POD --- RDS
+```
 
-### CloudWatch Logs
-- **Log Group**: /aws/apigateway/soat-fast-food-api
-- **Retention**: 7 dias
-- **Format**: JSON estruturado com detalhes da requisição
+## Recursos Criados
 
-### Recursos Preparados (Comentados)
-- **Security Group**: Para VPC Link
-- **VPC Link**: Para conectar com serviços na VPC privada
-- **Integrations**: Templates para integração com backend
-- **Routes**: Templates para rotas da API
+- `aws_apigatewayv2_api.main`: HTTP API (nome: `soat-fast-food-api`)
+- `aws_apigatewayv2_stage.main`: Stage `dev` (auto_deploy=true)
+- `aws_cloudwatch_log_group.api_gateway`: Log group `/aws/apigateway/soat-fast-food-api`
+- `aws_security_group.vpc_link`: SG para o VPC Link
+- `aws_apigatewayv2_vpc_link.main`: VPC Link nas subnets privadas
+- `aws_apigatewayv2_integration.backend`: Integração HTTP_PROXY via VPC Link para o listener do NLB
+  - `integration_uri = <ARN do listener do NLB>`
+  - `request_parameters = { "overwrite:path" = "$request.path" }`
+- `aws_apigatewayv2_route.proxy`: Rota `ANY /{proxy+}` apontando para a integração
 
-## ⚙️ Configuração
+## Pré‑requisitos
 
-### Backend
+- Camada `0-bootstrap` aplicada (state remoto S3)
+- Camada `1-networking` aplicada (VPC + subnets privadas/públicas, tags para ELB)
+- Camada `2-eks` aplicada (nodes em subnets privadas)
+- Backend deployado via Helm com Service expondo NLB interno:
+  - Arquivo: `soat_tech_challenge_fast_food_infra/helm/fast-food/templates/service.yaml`
+  - Annotations principais:
+    - `service.beta.kubernetes.io/aws-load-balancer-type: "nlb"`
+    - `service.beta.kubernetes.io/aws-load-balancer-internal: "true"`
+    - `service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"`
 
-Esta camada usa S3 como backend remoto:
-- **Bucket**: soat-fast-food-terraform-states
-- **Key**: 4-api-gateway/terraform.tfstate
-- **Region**: us-east-1
-- **Encryption**: Habilitada
+## Como Implantar
 
-### Dependências
+1) Criar/atualizar o Service (NLB interno):
 
-Esta camada depende da camada **1-networking** via `terraform_remote_state`:
-- Busca VPC ID e subnet IDs (para VPC Link futuro)
-- Preparado para integração com recursos de rede
+```
+helm upgrade --install fast-food \
+  ./soat_tech_challenge_fast_food_infra/helm/fast-food \
+  -n fast-food -f soat_tech_challenge_fast_food_infra/helm/fast-food/values.yaml --wait
 
-### Variáveis
+kubectl -n fast-food get svc fast-food -o jsonpath='{.status.loadBalancer.ingress[0].hostname}{"\n"}'
+# Ex.: ad51ed2ea764549dc8a78495dfb5e978-e9f7d118e893f2e6.elb.us-east-1.amazonaws.com (scheme internal)
+```
 
-| Variável | Descrição | Valor Padrão |
-|----------|-----------|--------------|
-| `aws_region` | Região AWS | `us-east-1` |
-| `aws_profile` | Perfil AWS CLI | `default` |
-| `project_name` | Nome do projeto | `soat-fast-food` |
-| `environment` | Ambiente | `dev` |
-| `api_name` | Nome do API Gateway | `soat-fast-food-api` |
-| `stage_name` | Nome do stage | `dev` |
-| `auto_deploy` | Auto-deploy habilitado | `true` |
-| `log_retention_days` | Retenção de logs (dias) | `7` |
-| `cors_allow_origins` | Origens permitidas CORS | `["*"]` |
-| `cors_allow_methods` | Métodos permitidos CORS | `["GET", "POST", "PUT", "DELETE", "OPTIONS"]` |
-| `cors_allow_headers` | Headers permitidos CORS | `["Content-Type", "Authorization", ...]` |
-| `cors_max_age` | Max age CORS (segundos) | `300` |
+2) Aplicar Terraform do API Gateway (informando o nome do NLB):
 
-### Outputs
-
-| Output | Descrição |
-|--------|-----------|
-| `api_id` | ID do API Gateway |
-| `api_endpoint` | Endpoint URL do API Gateway |
-| `api_arn` | ARN do API Gateway |
-| `stage_id` | ID do stage |
-| `stage_invoke_url` | URL de invocação do stage |
-| `stage_arn` | ARN do stage |
-| `cloudwatch_log_group_name` | Nome do log group |
-| `cloudwatch_log_group_arn` | ARN do log group |
-
-## 🚀 Como Usar
-
-### Pré-requisitos
-
-1. Camada 0-bootstrap aplicada
-2. Camada 1-networking aplicada
-
-### 1. Inicializar Terraform
-
-```bash
-cd terraform/4-api-gateway
+```
+cd soat_tech_challenge_fast_food_infra/4-api-gateway
 terraform init
+terraform apply -var="nlb_name=<NOME_DO_NLB>"
+# Dica: o nome do NLB é o prefixo do DNS (antes do primeiro hífen)
+# Ex.: DNS=ad51ed2ea764549dc8a78495dfb5e978-...  → nlb_name=ad51ed2ea764549dc8a78495dfb5e978
 ```
 
-### 2. Planejar
+3) Testar a API via Gateway:
 
-```bash
-terraform plan
 ```
-
-### 3. Aplicar
-
-```bash
-terraform apply
-```
-
-### 4. Obter URL da API
-
-```bash
-terraform output stage_invoke_url
-```
-
-### 5. Testar API
-
-```bash
-# Obter URL
 API_URL=$(terraform output -raw stage_invoke_url)
-
-# Testar (quando rotas estiverem configuradas)
-curl $API_URL/health
+curl -i "$API_URL/health"            # deve retornar 200 com JSON {status: ok}
+curl -i "$API_URL/api/v1/products"   # conforme rotas do backend
 ```
 
-## 📊 Arquitetura
+## Variáveis Principais (Terraform)
 
-```
-┌─────────────────────────────────────────────────────┐
-│                  Internet                           │
-└─────────────────────┬───────────────────────────────┘
-                      │
-                      │ HTTPS
-                      │
-┌─────────────────────▼───────────────────────────────┐
-│            API Gateway HTTP API                     │
-│                                                     │
-│  ┌──────────────────────────────────────────────┐  │
-│  │  Stage: dev                                  │  │
-│  │  - Auto Deploy: Enabled                      │  │
-│  │  - CORS: Configured                          │  │
-│  │  - Logging: CloudWatch                       │  │
-│  └──────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────┘
-                      │
-                      │ (Future: VPC Link)
-                      │
-┌─────────────────────▼───────────────────────────────┐
-│              Private VPC                            │
-│         (Backend Services in EKS)                   │
-└─────────────────────────────────────────────────────┘
+- `nlb_name` (string): nome do NLB interno criado pelo Service. Default: `fast-food-nlb` (use `-var` para sobrepor)
+- `backend_listener_port` (number): porta do listener do NLB. Default: `80`
+- `route_key` (string): rota ligada à integração. Default: `ANY /{proxy+}`
+- Outras variáveis: `api_name`, `stage_name`, `cors_*`, `log_retention_days`, etc.
+
+## Como Funciona o Roteamento
+
+```mermaid
+sequenceDiagram
+    participant Client as Cliente
+    participant APIGW as API Gateway (HTTP API)
+    participant VPC as VPC Link
+    participant NLB as NLB Interno (:80)
+    participant SVC as K8s Service
+    participant POD as Pods (Fast Food API)
+
+    Client->>APIGW: HTTPS GET/POST /dev/...
+    APIGW->>VPC: Route ANY /{proxy+}
+    VPC->>NLB: TCP :80 (listener ARN)
+    NLB->>SVC: TCP :80 → :8080
+    SVC->>POD: encaminha para os pods
+    Note over APIGW,POD: overwrite:path = $request.path
 ```
 
-## 🔄 Dependências
+- O parâmetro `request_parameters = { "overwrite:path" = "$request.path" }` garante que o caminho completo requisitado pelo cliente (ex.: `/health`, `/api/v1/orders`) seja encaminhado ao backend.
+- Sem isso, a chamada pode cair em `/` no backend e retornar 404.
 
-### Depende de:
-- ✅ 0-bootstrap (bucket S3 para state)
-- ✅ 1-networking (VPC e subnets para VPC Link futuro)
+## TLS (opcional)
 
-### É usado por:
-- Aplicações frontend
-- Clientes externos
-- Integrações de terceiros
+- Para tráfego cifrado até o NLB:
+  - Adicione listener 443 no NLB via annotations do Service (ACM/TLS)
+  - Ajuste `backend_listener_port = 443`
+  - Configure `tls_config.server_name_to_verify` na integração do API Gateway (igual ao hostname do certificado do NLB)
+- Como o NLB aqui é interno e o tráfego fica dentro da VPC, HTTP pode ser aceitável para ambientes não regulados.
 
-## 📝 Próximos Passos
+## Observações sobre o NLB
 
-Para completar a configuração do API Gateway:
+- O in-tree cloud provider do Kubernetes pode ignorar nomes de LB; por isso usamos `nlb_name` dinâmico (descoberto a partir do DNS gerado).
+- Se você utilizar o AWS Load Balancer Controller, pode usar `spec.loadBalancerClass: service.k8s.aws/nlb` e obter mais controle (nomenclatura, target-type IP, etc.).
 
-### 1. Criar VPC Link
+## Troubleshooting
 
-Descomente e configure o VPC Link em [`main.tf`](main.tf:75):
+- 404 no `/health` via API Gateway:
+  - Confirme que a integração tem `request_parameters.overwrite:path = "$request.path"`.
+  - Verifique a rota `ANY /{proxy+}` no API Gateway.
 
-```hcl
-resource "aws_security_group" "vpc_link" {
-  # ... configuração
-}
+- NLB público em vez de interno:
+  - Garanta as annotations do Service e recrie o Service (mudar apenas a annotation não altera o scheme do LB existente).
+  - O DNS de LBs internos normalmente aparece como `internal-…` (ou verifique `Scheme=internal` via AWS CLI).
 
-resource "aws_apigatewayv2_vpc_link" "main" {
-  # ... configuração
-}
+- 502/504 via API Gateway:
+  - Verifique health checks do NLB, pods prontos, e security groups.
+  - Confirme que o listener/porta do NLB coincide com `backend_listener_port`.
+
+- Erro ao mapear headers restritos:
+  - HTTP API bloqueia operações sobre certos cabeçalhos (`x-forwarded-for`, etc.). Mantenha apenas `overwrite:path`.
+
+## Custos
+
+- API Gateway (HTTP API): por requisições
+- CloudWatch Logs: armazenamento/ingestão
+- VPC Link: ~$0.01/h + transferência
+
+## Destruir
+
 ```
-
-### 2. Adicionar Integrações
-
-Configure integrações com seus backends:
-
-```hcl
-resource "aws_apigatewayv2_integration" "backend" {
-  api_id             = aws_apigatewayv2_api.main.id
-  integration_type   = "HTTP_PROXY"
-  integration_uri    = "http://backend-service"
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.main.id
-}
-```
-
-### 3. Configurar Rotas
-
-Adicione rotas para seus endpoints:
-
-```hcl
-resource "aws_apigatewayv2_route" "api" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "GET /api/{proxy+}"
-  target    = "integrations/${aws_apigatewayv2_integration.backend.id}"
-}
-```
-
-## ⚠️ Importante
-
-- CORS está configurado para permitir todas as origens (`*`) - ajuste para produção
-- Logs são retidos por 7 dias - ajuste conforme necessidade
-- VPC Link e integrações estão comentados - habilite quando backend estiver pronto
-- Auto-deploy está habilitado - mudanças são aplicadas automaticamente
-
-## 🔐 Segurança
-
-- API Gateway usa HTTPS por padrão
-- CORS configurado (ajuste origins para produção)
-- Logs estruturados no CloudWatch
-- VPC Link (quando habilitado) mantém tráfego privado
-- Security Group (quando habilitado) controla acesso
-
-## 💰 Custos
-
-Principais componentes de custo:
-- **API Gateway**: Por milhão de requisições (~$1.00/milhão)
-- **CloudWatch Logs**: Por GB armazenado e ingerido
-- **VPC Link** (quando habilitado): ~$0.01/hora + data transfer
-
-## 🗑️ Destruição
-
-Para destruir esta camada:
-
-```bash
-cd terraform/4-api-gateway
+cd soat_tech_challenge_fast_food_infra/4-api-gateway
 terraform destroy
 ```
-
-**Nota**: Esta camada pode ser destruída independentemente das outras.
-
-## 🔧 Troubleshooting
-
-### API não responde
-- Verifique se stage está criado
-- Confirme auto-deploy está habilitado
-- Verifique logs no CloudWatch
-
-### CORS errors
-- Ajuste `cors_allow_origins` nas variáveis
-- Verifique headers permitidos
-- Confirme métodos HTTP permitidos
-
-### Logs não aparecem
-- Verifique permissões do API Gateway para CloudWatch
-- Confirme log group existe
-- Verifique formato de log configurado
-
-## 📝 Notas
-
-- API Gateway HTTP API é mais simples e barato que REST API
-- CORS está pré-configurado para desenvolvimento
-- Logging estruturado facilita debugging
-- VPC Link permite integração segura com recursos privados
-- Templates comentados facilitam expansão futura

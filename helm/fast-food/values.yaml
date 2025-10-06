@@ -1,7 +1,11 @@
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+
 app:
   name: fast-food-api
   image:
-    repository: danieltezolin/fast-food-api
+    repository: tezolind/fast-food-api
     tag: "latest"
     pullPolicy: IfNotPresent
   
@@ -45,9 +49,9 @@ app:
 
 env:
   # Database
-  DB_HOST: "your-rds-endpoint.rds.amazonaws.com"
+  DB_HOST: "soatfastfood.cu30cqsew6wy.us-east-1.rds.amazonaws.com"
   DB_PORT: "3306"
-  DB_NAME: "soatfastfood"
+  DB_NAME: "fast_food_db"
   DB_USER: "app_user"
   
   # Application
@@ -56,7 +60,7 @@ env:
   ENVIRONMENT: "production"
 
 secrets:
-  DB_PASSWORD: "eW91cl9iYXNlNjRfZW5jb2RlZF9wYXNzd29yZA=="
+  DB_PASSWORD: "RlR0V1Facko2Y3Jmdk1kUE5xbkw="
   
   ACCESSTOKEN: "eW91cl9tZXJjYWRvcGFnb190b2tlbl9oZXJl"
 
