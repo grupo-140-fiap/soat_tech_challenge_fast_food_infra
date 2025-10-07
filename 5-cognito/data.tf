@@ -6,16 +6,17 @@ data "terraform_remote_state" "networking" {
     bucket  = "soat-fast-food-terraform-states"
     key     = "1-networking/terraform.tfstate"
     region  = "us-east-1"
+    profile = "default"
   }
 }
 
-# Get cognito layer outputs via remote state
-data "terraform_remote_state" "cognito" {
+# Get database layer outputs via remote state
+data "terraform_remote_state" "db" {
   backend = "s3"
 
   config = {
     bucket  = "soat-fast-food-terraform-states"
-    key     = "5-cognito/terraform.tfstate"
+    key     = "rds/terraform.tfstate"
     region  = "us-east-1"
     profile = "default"
   }

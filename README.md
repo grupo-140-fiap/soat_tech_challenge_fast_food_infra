@@ -188,49 +188,6 @@ Validação de todas as configurações
 ./terraform/scripts/validate-all.sh
 ```
 
-## 🔐 Segurança
-
-### Network Security
-- Recursos em subnets privadas
-- NAT Gateway para acesso internet
-- Security Groups configurados
-- VPC Link preparado (future)
-
-### IAM Security
-- Roles com least privilege
-- Pod Identity para workloads
-- Service accounts dedicados
-
-### Data Security
-- States criptografados (S3)
-- Versionamento habilitado
-- HTTPS/TLS em todas comunicações
-
-## 💰 Custos Estimados
-
-### Ambiente Dev (Mensal)
-
-| Componente | Custo Aproximado |
-|------------|------------------|
-| EKS Control Plane | ~$73 |
-| EC2 Nodes (2x t3.medium) | ~$60 |
-| NAT Gateway | ~$32 |
-| API Gateway | ~$1/milhão req |
-| CloudWatch Logs | Variável |
-| S3 States | < $1 |
-| **Total** | **~$170-200** |
-
-## 📈 Escalabilidade
-
-### Horizontal Pod Autoscaler (HPA)
-- Baseado em CPU/Memory
-- Metrics Server habilitado
-- Min/Max configurável
-
-### Cluster Autoscaler
-- Auto-scaling de nodes
-- Baseado em demanda de pods
-- Scale down automático
 
 ## 🔍 Monitoramento
 
