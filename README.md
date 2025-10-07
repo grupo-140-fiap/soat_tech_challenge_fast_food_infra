@@ -24,7 +24,8 @@ terraform/
 ### Pré-requisitos
 
 - **Terraform**: ~> 1.13.2
-- **AWS Role**: Configurado com a role `soat-tech-challenge-fast-food-role`
+- **AWS CLI**: Configurado com perfil `default` (execução local do terraform)
+- **AWS Role**: Configurado com a role `soat-tech-challenge-fast-food-role` (execução via actions do terraform)
 ```json
 {
     "Path": "/",
