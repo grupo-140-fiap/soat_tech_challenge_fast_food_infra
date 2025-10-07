@@ -6,7 +6,6 @@ data "terraform_remote_state" "networking" {
     bucket  = "soat-fast-food-terraform-states"
     key     = "1-networking/terraform.tfstate"
     region  = "us-east-1"
-    profile = "default"
   }
 }
 
@@ -18,6 +17,5 @@ data "terraform_remote_state" "db" {
     bucket  = "soat-fast-food-terraform-states"
     key     = "rds/terraform.tfstate"
     region  = "us-east-1"
-    profile = "default"
   }
 }
