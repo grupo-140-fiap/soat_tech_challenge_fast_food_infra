@@ -81,7 +81,7 @@ main() {
     aws eks update-kubeconfig \
         --name eks-soat-fast-food-dev \
         --region us-east-1 \
-        --role-arn $AWS_ROLE_ARN
+        --role-arn "$AWS_ROLE_ARN"
     print_success "kubectl configured successfully!"
     echo ""
     
