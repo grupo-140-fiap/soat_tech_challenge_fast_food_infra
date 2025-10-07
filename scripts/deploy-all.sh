@@ -72,7 +72,7 @@ main() {
     AWS_ROLE_ARN="arn:aws:iam::323726447562:role/soat-tech-challenge-fast-food-role"
     
     # Deploy layers in order
-    deploy_layer "0-Bootstrap" "$TERRAFORM_DIR/0-bootstrap"
+    #deploy_layer "0-Bootstrap" "$TERRAFORM_DIR/0-bootstrap"
     deploy_layer "1-Networking" "$TERRAFORM_DIR/1-networking"
     deploy_layer "2-EKS" "$TERRAFORM_DIR/2-eks"
     
