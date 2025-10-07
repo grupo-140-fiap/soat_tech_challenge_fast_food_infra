@@ -26,6 +26,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - uses: hashicorp/setup-terraform@v3
+        name: Terraform setup
+
       - id: validate
         name: Terraform validate
         if: github.event_name == 'pull_request'
