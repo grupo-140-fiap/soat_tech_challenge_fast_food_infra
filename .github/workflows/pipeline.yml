@@ -1,0 +1,40 @@
+name: Projeto Tech Challenge - SOAT - Sistema de controle de pedidos para lanchonete
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+  pull_request:
+    branches: [main]
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  plan:
+    name: Deploy Infra EKS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        name: Terraform setup
+
+      - id: validate
+        name: Terraform validate
+        if: github.event_name == 'pull_request'
+        run: ./scripts/validate-all.sh
+
+      - id: push
+        name: Terraform plan/apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: ./scripts/validate-all.sh
