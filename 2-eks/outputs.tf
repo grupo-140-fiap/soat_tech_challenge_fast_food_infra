@@ -54,7 +54,7 @@ output "node_group_iam_role_arn" {
   value       = aws_iam_role.node_group.arn
 }
 
-output "oidc_provider_arn" {
-  description = "OIDC issuer URL for the cluster"
-  value       = aws_eks_cluster.main.identity[0].oidc[0].issuer
-}
+# output "oidc_provider_arn" {
+#   description = "OIDC issuer URL for the cluster"
+#   value       = aws_eks_cluster.main.identity[0].oidc[0].issuer
+# }

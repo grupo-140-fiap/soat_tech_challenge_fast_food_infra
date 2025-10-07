@@ -6,7 +6,6 @@ data "terraform_remote_state" "eks" {
     bucket  = "soat-fast-food-terraform-states"
     key     = "2-eks/terraform.tfstate"
     region  = "us-east-1"
-    profile = var.aws_profile
   }
 }
 
