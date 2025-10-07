@@ -213,3 +213,101 @@ kubectl logs -n kube-system -l app.kubernetes.io/name=aws-cluster-autoscaler
 cd terraform/4-api-gateway
 terraform output stage_invoke_url
 ```
+
+## 🚨 Troubleshooting
+
+### Cluster não acessível
+
+```bash
+# Reconfigurar kubectl
+aws eks update-kubeconfig \
+  --name eks-soat-fast-food-dev \
+  --region us-east-1
+```
+
+### Metrics Server não funciona
+
+```bash
+# Verificar logs
+kubectl logs -n kube-system -l k8s-app=metrics-server
+
+# Verificar deployment
+kubectl get deployment metrics-server -n kube-system
+```
+
+### State lock (se ocorrer)
+
+```bash
+# Como não usamos DynamoDB, não há locks automáticos
+# Certifique-se de não executar terraform em paralelo
+```
+
+## 🎯 Próximos Passos
+
+Após deployment:
+
+1. **Aplicações**: Deploy de workloads no Kubernetes
+2. **API Gateway**: Configurar rotas e integrações
+3. **Monitoramento**: Implementar Prometheus/Grafana
+4. **CI/CD**: Configurar pipelines automatizados
+5. **Segurança**: Implementar WAF e rate limiting
+
+## ⚙️ Pipeline de deploy da infra EKS via Github Actions
+```bash
+.github/workflows/pipeline.yml
+```
+
+## 🔄 Atualizações
+
+### Atualizar uma Camada
+
+```bash
+cd terraform/2-eks
+terraform plan
+terraform apply
+```
+
+### Atualizar Versão do Kubernetes
+
+```bash
+# Editar variável em 2-eks/variables.tf
+# cluster_version = "1.30"
+
+cd terraform/2-eks
+terraform apply
+```
+
+## 📝 Convenções
+
+### Nomenclatura
+- Recursos: `{project}-{resource}-{env}`
+- Tags obrigatórias: `Name`, `Environment`, `Project`
+
+### Versionamento
+- Terraform: ~> 1.13.2
+- AWS Provider: ~> 5.0
+- Kubernetes Provider: ~> 2.20
+- Helm Provider: ~> 2.11
+
+## 🤝 Contribuindo
+
+1. Validar mudanças: `./terraform/scripts/validate-all.sh`
+2. Testar em ambiente dev
+3. Documentar alterações
+4. Atualizar READMEs relevantes
+
+## 📞 Suporte
+
+Para questões ou problemas:
+1. Consultar documentação em `docs/`
+2. Verificar READMEs das camadas
+3. Revisar troubleshooting guides
+
+## 📄 Licença
+
+Este projeto faz parte do Tech Challenge - FIAP/SOAT
+
+---
+
+**Última atualização**: 2025-01-04
+**Versão**: 1.0.0

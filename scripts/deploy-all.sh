@@ -79,8 +79,7 @@ main() {
     print_info "Configuring kubectl..."
     aws eks update-kubeconfig \
         --name eks-soat-fast-food-dev \
-        --region us-east-1 \
-        --profile default
+        --region us-east-1
     print_success "kubectl configured successfully!"
     echo ""
     
