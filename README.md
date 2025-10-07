@@ -24,7 +24,32 @@ terraform/
 ### Pré-requisitos
 
 - **Terraform**: ~> 1.13.2
-- **AWS CLI**: Configurado com perfil `default`
+- **AWS CLI**: Configurado com perfil `default` (execução local do terraform)
+- **AWS Role**: Configurado com a role `soat-tech-challenge-fast-food-role` (execução via actions do terraform)
+```json
+{
+    "Path": "/",
+    "RoleName": "soat-tech-challenge-fast-food-role",
+    "RoleId": "AROAUWX4ZSPFOKAB37J5H",
+    "Arn": "arn:aws:iam::323726447562:role/soat-tech-challenge-fast-food-role",
+    "CreateDate": "2025-10-07T00:25:19+00:00",
+    "AssumeRolePolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "Administrator",
+                "Effect": "Allow",
+                "Principal": {
+                    "AWS": "arn:aws:iam::323726447562:user/terraform"
+                },
+                "Action": "sts:AssumeRole"
+            }
+        ]
+    },
+    "Description": "",
+    "MaxSessionDuration": 3600
+}
+```
 - **kubectl**: Para gerenciar Kubernetes
 - **Permissões AWS**: Adequadas para criar recursos
 
