@@ -99,7 +99,6 @@ terraform apply -var="db_password=SUA_SENHA_DO_DB"
 # Crie o terraform.tfvars
 cat > terraform.tfvars <<EOF
 aws_region   = "us-east-1"
-aws_profile  = "default"
 project_name = "soat-fast-food"
 environment  = "dev"
 db_password  = "SUA_SENHA_SEGURA"
