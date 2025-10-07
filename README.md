@@ -271,6 +271,11 @@ Após deployment:
 4. **CI/CD**: Configurar pipelines automatizados
 5. **Segurança**: Implementar WAF e rate limiting
 
+## ⚙️ Pipeline de deploy da infra EKS via Github Actions
+```bash
+.github/workflows/pipeline.yml
+```
+
 ## 🔄 Atualizações
 
 ### Atualizar uma Camada
