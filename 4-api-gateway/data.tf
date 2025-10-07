@@ -17,6 +17,5 @@ data "terraform_remote_state" "cognito" {
     bucket  = "soat-fast-food-terraform-states"
     key     = "5-cognito/terraform.tfstate"
     region  = "us-east-1"
-    profile = "default"
   }
 }
