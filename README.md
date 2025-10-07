@@ -265,8 +265,7 @@ terraform output stage_invoke_url
 # Reconfigurar kubectl
 aws eks update-kubeconfig \
   --name eks-soat-fast-food-dev \
-  --region us-east-1 \
-  --profile default
+  --region us-east-1
 ```
 
 ### Metrics Server não funciona
