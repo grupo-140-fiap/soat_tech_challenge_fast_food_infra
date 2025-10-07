@@ -136,8 +136,76 @@ resource "aws_apigatewayv2_integration" "backend" {
   }
 }
 
+# Lambda Authorizer
+resource "aws_apigatewayv2_authorizer" "cognito" {
+  api_id           = aws_apigatewayv2_api.main.id
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = data.terraform_remote_state.cognito.outputs.lambda_auth_invoke_arn
+  name             = "cognito-authorizer"
+  
+  authorizer_payload_format_version = "2.0"
+  enable_simple_responses           = false
+  
+  authorizer_result_ttl_in_seconds = 300 # Cache 5 min
+  
+  identity_sources = ["$request.header.Authorization"]
+}
+
+# Lambda permission for authorizer
+resource "aws_lambda_permission" "authorizer" {
+  statement_id  = "AllowAPIGatewayInvokeAuthorizer"
+  action        = "lambda:InvokeFunction"
+  function_name = data.terraform_remote_state.cognito.outputs.lambda_auth_function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.main.execution_arn}/authorizers/${aws_apigatewayv2_authorizer.cognito.id}"
+}
+
+# Integration for /auth endpoint
+resource "aws_apigatewayv2_integration" "auth" {
+  api_id           = aws_apigatewayv2_api.main.id
+  integration_type = "AWS_PROXY"
+  
+  integration_uri    = data.terraform_remote_state.cognito.outputs.lambda_auth_invoke_arn
+  integration_method = "POST"
+  
+  payload_format_version = "2.0"
+  timeout_milliseconds   = 30000
+}
+
+# Lambda permission for auth endpoint
+resource "aws_lambda_permission" "auth_endpoint" {
+  statement_id  = "AllowAPIGatewayInvokeAuth"
+  action        = "lambda:InvokeFunction"
+  function_name = data.terraform_remote_state.cognito.outputs.lambda_auth_function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.main.execution_arn}/*/*/auth"
+}
+
+# Public route: POST /auth
+resource "aws_apigatewayv2_route" "auth" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "POST /auth"
+  target    = "integrations/${aws_apigatewayv2_integration.auth.id}"
+  
+  # No authorizer - public route
+}
+
+# Public route: GET /customers/{cpf}
+resource "aws_apigatewayv2_route" "get_customer_cpf" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "GET /customers/{cpf}"
+  target    = "integrations/${aws_apigatewayv2_integration.backend.id}"
+  
+  # No authorizer - public route
+}
+
+# Protected route: All other routes
 resource "aws_apigatewayv2_route" "proxy" {
   api_id    = aws_apigatewayv2_api.main.id
   route_key = var.route_key
   target    = "integrations/${aws_apigatewayv2_integration.backend.id}"
+  
+  # With authorizer - protected routes
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
+  authorization_type = "CUSTOM"
 }

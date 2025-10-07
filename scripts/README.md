@@ -186,37 +186,6 @@ export AWS_PROFILE=meu-perfil
 ./terraform/scripts/deploy-all.sh
 ```
 
-## 🔧 Troubleshooting
-
-### Script falha no meio do deploy
-
-```bash
-# Identificar qual camada falhou
-# Ir para a camada específica e investigar
-cd terraform/2-eks
-terraform plan
-
-# Corrigir o problema
-# Re-executar o script
-./terraform/scripts/deploy-all.sh
-```
-
-### Permissões negadas
-
-```bash
-# Dar permissão de execução
-chmod +x terraform/scripts/*.sh
-```
-
-### AWS credentials não encontradas
-
-```bash
-# Configurar AWS CLI
-aws configure --profile default
-
-# Verificar
-aws sts get-caller-identity --profile default
-```
 
 ## 📝 Notas Importantes
 
@@ -226,22 +195,7 @@ aws sts get-caller-identity --profile default
 4. **Confirmação**: destroy-all.sh requer confirmação explícita
 5. **Cleanup**: Plan files são automaticamente removidos após uso
 
-## 🔐 Segurança
 
-- Scripts não armazenam credenciais
-- Usam perfil AWS configurado localmente
-- Não fazem auto-approve em destroy (requer confirmação)
-- Plan files são limpos após uso
-
-## 🎯 Próximos Passos
-
-Após usar os scripts:
-
-1. Verificar recursos criados no console AWS
-2. Testar conectividade com cluster
-3. Validar API Gateway
-4. Configurar monitoramento
-5. Implementar CI/CD
 
 ## 📚 Referências
 
