@@ -37,3 +37,23 @@ output "cloudwatch_log_group_arn" {
   description = "ARN of the CloudWatch log group for API Gateway"
   value       = aws_cloudwatch_log_group.api_gateway.arn
 }
+
+output "authorizer_id" {
+  description = "ID of the Cognito authorizer"
+  value       = aws_apigatewayv2_authorizer.cognito.id
+}
+
+output "auth_route_id" {
+  description = "ID of the /auth route"
+  value       = aws_apigatewayv2_route.auth.id
+}
+
+output "customer_cpf_route_id" {
+  description = "ID of the /customers/{cpf} route"
+  value       = aws_apigatewayv2_route.get_customer_cpf.id
+}
+
+output "protected_route_id" {
+  description = "ID of the protected proxy route"
+  value       = aws_apigatewayv2_route.proxy.id
+}
