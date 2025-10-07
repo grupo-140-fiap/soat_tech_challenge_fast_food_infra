@@ -69,6 +69,7 @@ main() {
     # Get script directory
     SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     TERRAFORM_DIR="$(dirname "$SCRIPT_DIR")"
+    AWS_ROLE_ARN="arn:aws:iam::323726447562:role/soat-tech-challenge-fast-food-role"
     
     # Deploy layers in order
     deploy_layer "0-Bootstrap" "$TERRAFORM_DIR/0-bootstrap"
@@ -79,7 +80,8 @@ main() {
     print_info "Configuring kubectl..."
     aws eks update-kubeconfig \
         --name eks-soat-fast-food-dev \
-        --region us-east-1
+        --region us-east-1 \
+        --role-arn "$AWS_ROLE_ARN"
     print_success "kubectl configured successfully!"
     echo ""
     
