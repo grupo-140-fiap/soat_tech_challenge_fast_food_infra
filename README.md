@@ -14,7 +14,7 @@ terraform/
 ├── 1-networking/         # VPC, subnets, gateways
 ├── 2-eks/               # Cluster EKS e nodes
 ├── 3-kubernetes/        # Helm charts e add-ons
-├── 4-api-gateway/       # API Gateway HTTP
+├── 5-api-gateway/       # API Gateway HTTP
 ├── scripts/             # Scripts de automação
 └── docs/                # Documentação detalhada
 ```
@@ -127,7 +127,7 @@ kubectl get pods -A
 
 ---
 
-### 4-API-Gateway
+### 5-api-gateway
 **Propósito**: Exposição de APIs
 
 **Recursos**:
@@ -136,7 +136,7 @@ kubectl get pods -A
 - CORS configurado
 - Preparado para VPC Link
 
-**Documentação**: [`4-api-gateway/README.md`](4-api-gateway/README.md)
+**Documentação**: [`5-api-gateway/README.md`](5-api-gateway/README.md)
 
 ## 🔄 Fluxo de Dependências
 
@@ -145,7 +145,7 @@ graph TD
     A[0-bootstrap] --> B[1-networking]
     B --> C[2-eks]
     C --> D[3-kubernetes]
-    B --> E[4-api-gateway]
+    B --> E[5-api-gateway]
 ```
 
 ## 📚 Documentação
@@ -210,7 +210,7 @@ kubectl top pods -A
 kubectl logs -n kube-system -l app.kubernetes.io/name=aws-cluster-autoscaler
 
 # API Gateway URL
-cd terraform/4-api-gateway
+cd terraform/5-api-gateway
 terraform output stage_invoke_url
 ```
 

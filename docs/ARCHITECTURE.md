@@ -102,7 +102,7 @@ Este documento descreve a arquitetura da infraestrutura do projeto Tech Challeng
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                  4-API-GATEWAY                              │
+│                  5-api-gateway                              │
 │                                                             │
 │  ┌──────────────────────────────────────────────────────┐  │
 │  │  API Gateway HTTP API                                │  │

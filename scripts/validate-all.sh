@@ -81,7 +81,7 @@ main() {
     validate_layer "1-Networking" "$TERRAFORM_DIR/1-networking"
     validate_layer "2-EKS" "$TERRAFORM_DIR/2-eks"
     validate_layer "3-Kubernetes" "$TERRAFORM_DIR/3-kubernetes"
-    validate_layer "4-API-Gateway" "$TERRAFORM_DIR/4-api-gateway"
+    validate_layer "5-api-gateway" "$TERRAFORM_DIR/5-api-gateway"
     
     # Display summary
     echo ""

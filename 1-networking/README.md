@@ -141,11 +141,11 @@ terraform output
 
 ### É usado por:
 - ⏭️ 2-eks (subnets para cluster e nodes)
-- ⏭️ 4-api-gateway (VPC e subnets para VPC Link)
+- ⏭️ 5-api-gateway (VPC e subnets para VPC Link)
 
 ## ⚠️ Importante
 
-- Esta camada deve ser aplicada **antes** das camadas 2-eks e 4-api-gateway
+- Esta camada deve ser aplicada **antes** das camadas 2-eks e 5-api-gateway
 - As tags do Kubernetes nas subnets são essenciais para o funcionamento do EKS
 - O NAT Gateway tem custo por hora, mesmo quando não está em uso
 - Mudanças na VPC ou subnets podem impactar recursos dependentes
@@ -156,7 +156,7 @@ Para destruir esta camada, **primeiro destrua as camadas dependentes**:
 
 ```bash
 # Destruir camadas dependentes primeiro
-cd ../4-api-gateway && terraform destroy
+cd ../5-api-gateway && terraform destroy
 cd ../3-kubernetes && terraform destroy
 cd ../2-eks && terraform destroy
 

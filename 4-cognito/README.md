@@ -81,7 +81,7 @@ Esta camada implementa o sistema de autenticação usando AWS Cognito e Lambda p
 
 ```bash
 # 1. Vá para a pasta da camada
-cd soat_tech_challenge_fast_food_infra/5-cognito
+cd soat_tech_challenge_fast_food_infra/4-cognito
 
 # 2. Inicialize o Terraform
 terraform init
@@ -326,7 +326,7 @@ aws s3 rm s3://soat-fast-food-lambda-packages-dev --recursive
 - `db`: RDS MySQL
 
 ### Downstream (Consome esta camada)
-- `4-api-gateway`: Integração com API Gateway
+- `5-api-gateway`: Integração com API Gateway
 
 ---
 
