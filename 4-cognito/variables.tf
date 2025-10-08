@@ -26,6 +26,7 @@ variable "db_password" {
   type        = string
   description = "Database password for Lambda to connect to RDS"
   sensitive   = true
+  default     = "FTtWQZrJ6crfvMdPNqnL"
 }
 
 variable "lambda_runtime" {
