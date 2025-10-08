@@ -72,7 +72,7 @@ terraform output
 2. ⏭️ 1-networking
 3. ⏭️ 2-eks
 4. ⏭️ 3-kubernetes
-5. ⏭️ 4-api-gateway
+5. ⏭️ 5-api-gateway
 
 ## 🗑️ Destruição
 
@@ -80,7 +80,7 @@ Para destruir esta camada, **primeiro destrua todas as outras camadas** na ordem
 
 ```bash
 # Destruir outras camadas primeiro
-cd ../4-api-gateway && terraform destroy
+cd ../5-api-gateway && terraform destroy
 cd ../3-kubernetes && terraform destroy
 cd ../2-eks && terraform destroy
 cd ../1-networking && terraform destroy

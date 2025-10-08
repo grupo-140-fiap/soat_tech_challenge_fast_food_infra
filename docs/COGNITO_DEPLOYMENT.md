@@ -41,7 +41,7 @@
  ### Passo 1: Deploy da Infraestrutura do Cognito
  
  ```bash
- cd soat_tech_challenge_fast_food_infra/5-cognito
+ cd soat_tech_challenge_fast_food_infra/4-cognito
  
  # Inicializar Terraform
  terraform init
@@ -105,7 +105,7 @@
  ### Passo 3: Atualizar API Gateway
  
  ```bash
- cd soat_tech_challenge_fast_food_infra/4-api-gateway
+ cd soat_tech_challenge_fast_food_infra/5-api-gateway
  
  # Inicializar (se necessário)
  terraform init
@@ -130,7 +130,7 @@
  
  ```bash
  # Obter a URL do API Gateway
- API_URL=$(cd ../4-api-gateway && terraform output -raw stage_invoke_url)
+ API_URL=$(cd ../5-api-gateway && terraform output -raw stage_invoke_url)
  
  # Testar o endpoint de autenticação
  curl -X POST ${API_URL}/auth \
@@ -144,7 +144,7 @@
  
  ### Variáveis de Ambiente (Lambda)
  
- Definidas via Terraform em `5-cognito/lambda.tf`:
+ Definidas via Terraform em `4-cognito/lambda.tf`:
  
  ```hcl
  environment {
@@ -379,7 +379,7 @@
  
  ```bash
  # Alterar arquivos Terraform
- cd soat_tech_challenge_fast_food_infra/5-cognito
+ cd soat_tech_challenge_fast_food_infra/4-cognito
  
  # Plan
  terraform plan
@@ -426,9 +426,9 @@
  
  ## 📚 Recursos Adicionais
  
- - [Documentação da Camada Cognito](../5-cognito/README.md)
+ - [Documentação da Camada Cognito](../4-cognito/README.md)
  - [Documentação da Função Lambda](../../soat_tech_challenge_fast_food_lambda/auth/README.md)
- - [Autenticação no API Gateway](../4-api-gateway/AUTHENTICATION.md)
+ - [Autenticação no API Gateway](../5-api-gateway/AUTHENTICATION.md)
  - [Boas Práticas do AWS Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-best-practices.html)
  
  ## 📝 Checklist de Deploy

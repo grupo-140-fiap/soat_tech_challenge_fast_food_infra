@@ -22,7 +22,7 @@ Esta pasta contém scripts auxiliares para facilitar o gerenciamento da infraest
 4. Configura kubectl automaticamente
 5. Verifica cluster
 6. Deploy da camada 3-kubernetes (Helm charts)
-7. Deploy da camada 4-api-gateway (API Gateway)
+7. Deploy da camada 5-api-gateway (API Gateway)
 8. Exibe informações importantes (URLs, endpoints)
 
 **Tempo estimado**: 25-30 minutos
@@ -40,7 +40,7 @@ Esta pasta contém scripts auxiliares para facilitar o gerenciamento da infraest
 
 **O que faz**:
 1. Solicita confirmação (digite 'yes')
-2. Destrói camada 4-api-gateway
+2. Destrói camada 5-api-gateway
 3. Destrói camada 3-kubernetes
 4. Destrói camada 2-eks
 5. Destrói camada 1-networking
@@ -138,7 +138,7 @@ Kubernetes control plane is running at https://xxxxx.eks.amazonaws.com
 
 Are you sure you want to continue? (type 'yes' to confirm): yes
 
-⚠️  Destroying Layer: 4-API-Gateway
+⚠️  Destroying Layer: 5-api-gateway
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [... continua ...]
 

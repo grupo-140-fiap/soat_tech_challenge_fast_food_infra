@@ -12,7 +12,7 @@ A infraestrutura está dividida em 5 camadas:
 2. **1-networking**: VPC, subnets, gateways e rotas
 3. **2-eks**: Cluster EKS e node groups
 4. **3-kubernetes**: Helm charts e add-ons do Kubernetes
-5. **4-api-gateway**: API Gateway HTTP
+5. **5-api-gateway**: API Gateway HTTP
 
 ## ⚙️ Pré-requisitos
 
@@ -184,7 +184,7 @@ kubectl logs -n kube-system -l app.kubernetes.io/name=aws-cluster-autoscaler
 **Objetivo**: Criar API Gateway HTTP
 
 ```bash
-cd terraform/4-api-gateway
+cd terraform/5-api-gateway
 
 # Inicializar
 terraform init
@@ -222,7 +222,7 @@ echo "API URL: $API_URL"
 
 ```bash
 # 1. API Gateway
-cd terraform/4-api-gateway
+cd terraform/5-api-gateway
 terraform destroy
 
 # 2. Kubernetes

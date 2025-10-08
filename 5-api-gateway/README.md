@@ -1,4 +1,4 @@
-# 4-API-Gateway — HTTP API + VPC Link (Privado)
+# 5-api-gateway — HTTP API + VPC Link (Privado)
 
 Esta camada provisiona um Amazon API Gateway HTTP API com integração privada (VPC Link) para o backend em EKS por trás de um Network Load Balancer (NLB) interno. Inclui CORS, logging no CloudWatch e variáveis utilitárias para simplificar a configuração.
 
@@ -62,7 +62,7 @@ kubectl -n fast-food get svc fast-food -o jsonpath='{.status.loadBalancer.ingres
 2) Aplicar Terraform do API Gateway (informando o nome do NLB):
 
 ```
-cd soat_tech_challenge_fast_food_infra/4-api-gateway
+cd soat_tech_challenge_fast_food_infra/5-api-gateway
 terraform init
 terraform apply -var="nlb_name=<NOME_DO_NLB>"
 # Dica: o nome do NLB é o prefixo do DNS (antes do primeiro hífen)
@@ -145,6 +145,6 @@ sequenceDiagram
 ## Destruir
 
 ```
-cd soat_tech_challenge_fast_food_infra/4-api-gateway
+cd soat_tech_challenge_fast_food_infra/5-api-gateway
 terraform destroy
 ```

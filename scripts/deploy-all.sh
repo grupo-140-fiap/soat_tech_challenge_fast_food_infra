@@ -91,7 +91,8 @@ main() {
     echo ""
     
     deploy_layer "3-Kubernetes" "$TERRAFORM_DIR/3-kubernetes"
-    deploy_layer "4-API-Gateway" "$TERRAFORM_DIR/4-api-gateway"
+    deploy_layer "4-Cognito" "$TERRAFORM_DIR/4-cognito"
+    deploy_layer "5-Api-gateway" "$TERRAFORM_DIR/5-api-gateway"
     
     # Display summary
     echo ""
@@ -105,7 +106,7 @@ main() {
     echo ""
     
     print_info "API Gateway URL:"
-    cd "$TERRAFORM_DIR/4-api-gateway"
+    cd "$TERRAFORM_DIR/5-api-gateway"
     terraform output stage_invoke_url
     cd - > /dev/null
     echo ""

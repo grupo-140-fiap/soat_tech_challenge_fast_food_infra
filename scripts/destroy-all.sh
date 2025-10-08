@@ -84,7 +84,7 @@ main() {
     TERRAFORM_DIR="$(dirname "$SCRIPT_DIR")"
     
     # Destroy layers in REVERSE order
-    destroy_layer "4-API-Gateway" "$TERRAFORM_DIR/4-api-gateway"
+    destroy_layer "5-api-gateway" "$TERRAFORM_DIR/5-api-gateway"
     destroy_layer "3-Kubernetes" "$TERRAFORM_DIR/3-kubernetes"
     destroy_layer "2-EKS" "$TERRAFORM_DIR/2-eks"
     destroy_layer "1-Networking" "$TERRAFORM_DIR/1-networking"
