@@ -2,15 +2,18 @@ global:
   imageRegistry: ""
   imagePullSecrets: []
 
+# Network Load Balancer name for this microservice
+nlbName: "fast-food-orders-nlb"
+
 app:
   name: fast-food-orders
   image:
-    repository: tezolind/fast-food-orders
+    repository: tezolind/orders-service
     tag: "latest"
     pullPolicy: IfNotPresent
   
   service:
-    type: ClusterIP
+    type: LoadBalancer
     port: 80
     targetPort: 8080
     
