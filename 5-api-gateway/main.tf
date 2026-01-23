@@ -192,22 +192,22 @@ resource "aws_apigatewayv2_route" "auth" {
   # No authorizer - public route
 }
 
-# Public route: GET /customers/{cpf}
-resource "aws_apigatewayv2_route" "get_customer_cpf" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "GET /customers/{cpf}"
-  target    = "integrations/${aws_apigatewayv2_integration.backend.id}"
+# # Public route: GET /customers/{cpf}
+# resource "aws_apigatewayv2_route" "get_customer_cpf" {
+#   api_id    = aws_apigatewayv2_api.main.id
+#   route_key = "GET /customers/{cpf}"
+#   target    = "integrations/${aws_apigatewayv2_integration.backend.id}"
   
-  # No authorizer - public route
-}
+#   # No authorizer - public route
+# }
 
 # Protected route: All other routes
-resource "aws_apigatewayv2_route" "proxy" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = var.route_key
-  target    = "integrations/${aws_apigatewayv2_integration.backend.id}"
+# resource "aws_apigatewayv2_route" "proxy" {
+#   api_id    = aws_apigatewayv2_api.main.id
+#   route_key = var.route_key
+#   target    = "integrations/${aws_apigatewayv2_integration.backend.id}"
   
-  # With authorizer - protected routes
-  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
-  authorization_type = "CUSTOM"
-}
+#   # With authorizer - protected routes
+#   authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
+#   authorization_type = "CUSTOM"
+# }
