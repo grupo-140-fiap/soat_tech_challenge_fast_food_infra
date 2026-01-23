@@ -41,6 +41,7 @@ destroy_layer() {
     
     # Plan destroy
     print_info "Planning destruction..."
+    terraform init
     terraform plan -destroy -out=tfplan
     
     # Apply destroy

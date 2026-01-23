@@ -22,7 +22,7 @@ Esta camada cria a infraestrutura necessária para armazenar os estados do Terra
 | `aws_profile` | Perfil AWS CLI | `default` |
 | `project_name` | Nome do projeto | `soat-fast-food` |
 | `environment` | Ambiente | `dev` |
-| `state_bucket_name` | Nome do bucket S3 | `soat-fast-food-terraform-states` |
+| `state_bucket_name` | Nome do bucket S3 | `soat-fast-food-infra-terraform-states` |
 
 ### Outputs
 

@@ -6,7 +6,7 @@ variable "aws_region" {
 
 variable "aws_profile" {
   type        = string
-  default     = "arn:aws:iam::323726447562:role/soat-tech-challenge-fast-food-role"
+  default     = "arn:aws:iam::426315020032:role/soat-tech-challenge-fast-food-role"
   description = "AWS CLI profile to use"
 }
 

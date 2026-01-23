@@ -36,7 +36,7 @@ Esta camada cria toda a infraestrutura de rede necessária para o projeto, inclu
 ### Backend
 
 Esta camada usa S3 como backend remoto:
-- **Bucket**: soat-fast-food-terraform-states
+- **Bucket**: soat-fast-food-infra-terraform-states
 - **Key**: 1-networking/terraform.tfstate
 - **Region**: us-east-1
 - **Encryption**: Habilitada

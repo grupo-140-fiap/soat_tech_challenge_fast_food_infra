@@ -69,10 +69,10 @@ main() {
     # Get script directory
     SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     TERRAFORM_DIR="$(dirname "$SCRIPT_DIR")"
-    AWS_ROLE_ARN="arn:aws:iam::323726447562:role/soat-tech-challenge-fast-food-role"
+    AWS_ROLE_ARN="arn:aws:iam::426315020032:role/soat-tech-challenge-fast-food-role"
     
     # Deploy layers in order
-    #deploy_layer "0-Bootstrap" "$TERRAFORM_DIR/0-bootstrap"
+    deploy_layer "0-Bootstrap" "$TERRAFORM_DIR/0-bootstrap"
     deploy_layer "1-Networking" "$TERRAFORM_DIR/1-networking"
     deploy_layer "2-EKS" "$TERRAFORM_DIR/2-eks"
     
