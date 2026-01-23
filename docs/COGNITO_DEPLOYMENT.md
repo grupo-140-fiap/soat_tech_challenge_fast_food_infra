@@ -79,12 +79,12 @@
  zip -r lambda.zip src/ node_modules/
  
  # Enviar para o S3
- aws s3 cp lambda.zip s3://soat-fast-food-lambda-packages-dev/auth/lambda.zip
+ aws s3 cp lambda.zip s3://soat-fast-food-lambda-packages-new-dev/auth/lambda.zip
  
  # Atualizar a função Lambda
  aws lambda update-function-code \
    --function-name soat-fast-food-auth-dev \
-   --s3-bucket soat-fast-food-lambda-packages-dev \
+   --s3-bucket soat-fast-food-lambda-packages-new-dev \
    --s3-key auth/lambda.zip
  ```
  
