@@ -3,7 +3,7 @@ resource "aws_s3_bucket" "lambda_packages" {
   bucket = "${var.project_name}-lambda-packages-new-${var.environment}"
 
   tags = {
-    Name        = "${var.project_name}-lambda-packages-${var.environment}"
+    Name        = "${var.project_name}-lambda-packages-new-${var.environment}"
     Environment = var.environment
     Project     = var.project_name
   }
