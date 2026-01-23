@@ -34,7 +34,7 @@ Este documento descreve a arquitetura da infraestrutura do projeto Tech Challeng
 │                     0-BOOTSTRAP                             │
 │                                                             │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  S3 Bucket: soat-fast-food-terraform-states          │  │
+│  │  S3 Bucket: soat-fast-food-infra-terraform-states          │  │
 │  │  - Versionamento habilitado                          │  │
 │  │  - Criptografia AES256                               │  │
 │  │  - Lifecycle: 90 dias                                │  │

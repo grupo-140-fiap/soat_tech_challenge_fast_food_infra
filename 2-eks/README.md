@@ -35,7 +35,7 @@ Esta camada cria o cluster Amazon EKS (Elastic Kubernetes Service) com node grou
 ### Backend
 
 Esta camada usa S3 como backend remoto:
-- **Bucket**: soat-fast-food-terraform-states
+- **Bucket**: soat-fast-food-infra-terraform-states
 - **Key**: 2-eks/terraform.tfstate
 - **Region**: us-east-1
 - **Encryption**: Habilitada

@@ -31,7 +31,7 @@ terraform/
     "Path": "/",
     "RoleName": "soat-tech-challenge-fast-food-role",
     "RoleId": "AROAUWX4ZSPFOKAB37J5H",
-    "Arn": "arn:aws:iam::323726447562:role/soat-tech-challenge-fast-food-role",
+    "Arn": "arn:aws:iam::426315020032:role/soat-tech-challenge-fast-food-role",
     "CreateDate": "2025-10-07T00:25:19+00:00",
     "AssumeRolePolicyDocument": {
         "Version": "2012-10-17",

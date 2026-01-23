@@ -32,7 +32,7 @@ Esta camada instala componentes essenciais do Kubernetes usando Helm, incluindo 
 ### Backend
 
 Esta camada usa S3 como backend remoto:
-- **Bucket**: soat-fast-food-terraform-states
+- **Bucket**: soat-fast-food-infra-terraform-states
 - **Key**: 3-kubernetes/terraform.tfstate
 - **Region**: us-east-1
 - **Encryption**: Habilitada
