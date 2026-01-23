@@ -1,6 +1,6 @@
 # S3 Bucket para armazenar pacotes Lambda
 resource "aws_s3_bucket" "lambda_packages" {
-  bucket = "${var.project_name}-lambda-packages-${var.environment}"
+  bucket = "${var.project_name}-lambda-packages-new-${var.environment}"
 
   tags = {
     Name        = "${var.project_name}-lambda-packages-${var.environment}"
