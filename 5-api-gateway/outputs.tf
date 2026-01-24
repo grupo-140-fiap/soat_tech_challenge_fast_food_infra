@@ -48,12 +48,12 @@ output "auth_route_id" {
   value       = aws_apigatewayv2_route.auth.id
 }
 
-output "customer_cpf_route_id" {
-  description = "ID of the /customers/{cpf} route"
-  value       = aws_apigatewayv2_route.get_customer_cpf.id
-}
+# output "customer_cpf_route_id" {
+#   description = "ID of the /customers/{cpf} route"
+#   value       = aws_apigatewayv2_route.get_customer_cpf.id
+# }
 
-output "protected_route_id" {
-  description = "ID of the protected proxy route"
-  value       = aws_apigatewayv2_route.proxy.id
-}
+# output "protected_route_id" {
+#   description = "ID of the protected proxy route"
+#   value       = aws_apigatewayv2_route.proxy.id
+# }
